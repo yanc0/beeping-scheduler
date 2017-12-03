@@ -1,26 +1,26 @@
 package scheduler
 
 import (
-	"time"
 	"fmt"
+	"time"
 )
 
 // Scheduler is responsible of scheduling job when their
 // NextRun time has come
 type Scheduler struct {
-	queue *Queue
-	store *Store
+	queue       *Queue
+	store       *Store
 	beepingUrls []string
 }
 
 // NewScheduler return a Scheduler
-func NewScheduler() *Scheduler{
+func NewScheduler() *Scheduler {
 	queue := NewQueue()
 	store := NewStore()
 	beepingUrls := []string{"http://localhost:8080/check"}
 	return &Scheduler{
-		queue: queue,
-		store: store,
+		queue:       queue,
+		store:       store,
 		beepingUrls: beepingUrls,
 	}
 }
@@ -28,8 +28,8 @@ func NewScheduler() *Scheduler{
 // Run the main scheluler loop
 func (s *Scheduler) Run() {
 	// Launch queue filler
-    go func(){
-		for {			
+	go func() {
+		for {
 			s.FillQueue()
 			time.Sleep(time.Second)
 		}
@@ -38,21 +38,20 @@ func (s *Scheduler) Run() {
 	// Launch Job workers
 	for {
 		job := s.queue.Pop()
-		if job != nil {			
+		if job != nil {
 			go job.Do(s.beepingUrls[0])
 			s.store.Done(job.ID)
 		}
-		time.Sleep(time.Millisecond * 200)		
+		time.Sleep(time.Millisecond * 200)
 	}
 }
-
 
 // FillQueue gets all job expired and put them
 // in queue
 func (s *Scheduler) FillQueue() {
 	jobs := s.store.ToRun()
 	fmt.Println(len(jobs), "to fill")
-	for _, j := range jobs {		
+	for _, j := range jobs {
 		s.queue.Add(j)
 	}
 }

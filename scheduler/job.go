@@ -1,20 +1,20 @@
 package scheduler
 
 import (
-	"github.com/yanc0/beeping/httpcheck"
-	"time"
-	"net/http"
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"github.com/yanc0/beeping/httpcheck"
 	"io/ioutil"
+	"net/http"
+	"time"
 
 	beeping "github.com/yanc0/beeping/httpcheck"
 )
 
 // Job represents a check to be done
 type Job struct {
-	ID string
+	ID       string
 	Check    beeping.Check
 	Interval time.Duration
 	NextRun  time.Time

@@ -19,7 +19,7 @@ func (q *Queue) Add(j *Job) error {
 	q.mtx.Lock()
 	q.jobs = append(q.jobs, j)
 	q.mtx.Unlock()
-	
+
 	return nil
 }
 
@@ -27,7 +27,7 @@ func (q *Queue) Pop() *Job {
 	var j *Job
 	q.mtx.Lock()
 	if len(q.jobs) == 0 {
-		q.mtx.Unlock()		
+		q.mtx.Unlock()
 		return nil
 	}
 	j = q.jobs[0]

@@ -1,22 +1,22 @@
 package scheduler
 
 import (
-	"time"
-	"sync"
 	"fmt"
 	"github.com/yanc0/beeping/httpcheck"
+	"sync"
+	"time"
 )
 
 // Store keep all managed jobs
 type Store struct {
-	mtx sync.Mutex
+	mtx  sync.Mutex
 	jobs map[string]*Job
 }
 
 // NewStore returns a new store
-func NewStore() *Store{
+func NewStore() *Store {
 	jobs := make(map[string]*Job, 1)
-	bee := httpcheck.Check {
+	bee := httpcheck.Check{
 		URL: "https://www.skale-5.com",
 	}
 	jobs["j1"] = &Job{ID: "j1", Interval: 5 * time.Second, NextRun: time.Now(), Check: bee}
@@ -30,10 +30,10 @@ func NewStore() *Store{
 	jobs["j9"] = &Job{ID: "j9", Interval: 13 * time.Second, NextRun: time.Now(), Check: bee}
 	jobs["j10"] = &Job{ID: "j10", Interval: 14 * time.Second, NextRun: time.Now(), Check: bee}
 	jobs["j11"] = &Job{ID: "j11", Interval: 15 * time.Second, NextRun: time.Now(), Check: bee}
-	
+
 	return &Store{
 		jobs: jobs,
-	}	
+	}
 }
 
 // ToRun returns a slice of job to as quick as possible
@@ -42,7 +42,7 @@ func (s *Store) ToRun() []*Job {
 	s.mtx.Lock()
 	for _, j := range s.jobs {
 		if j.NextRun.Before(time.Now()) {
-			toRun = append(toRun,j)
+			toRun = append(toRun, j)
 		}
 	}
 	s.mtx.Unlock()
@@ -50,7 +50,7 @@ func (s *Store) ToRun() []*Job {
 }
 
 // Done is called after a job is done
-func (s *Store) Done (jobID string) {
+func (s *Store) Done(jobID string) {
 	s.jobs[jobID].GenNextRun()
 	fmt.Println("job", jobID, "is done, next run:", s.jobs[jobID].NextRun)
 }
